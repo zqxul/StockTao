@@ -1,2 +1,2 @@
-# StockTao
+# stock.tao
 The road to wealth
