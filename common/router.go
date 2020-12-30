@@ -8,5 +8,6 @@ import (
 var Router = gin.Default()
 
 func init() {
-
+	Router.Use(gin.Logger())
+	Router.Use(gin.Recovery())
 }
