@@ -1,6 +1,8 @@
 package stock
 
-var group = Router.Group("stock")
+import "stock.tao/module/core"
+
+var group = core.Router.Group("stock")
 
 // init request path to handler
 func init() {
