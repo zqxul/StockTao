@@ -1,8 +1,6 @@
 package user
 
-import "stock.tao/common"
-
-var group = common.Router.Group("user")
+var group = Router.Group("/user")
 
 // init request path to handler
 func init() {

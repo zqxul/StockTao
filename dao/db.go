@@ -14,6 +14,17 @@ const (
 )
 
 // Connect database source
+func Connect() *gorm.DB {
+	fmt.Printf("Open datasource %s", dsn)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		fmt.Printf("Open %s error:%v\n", dsn, err)
+		panic(err.Error())
+	}
+	return db
+}
+
+// Connect database source
 func Connect(dsn string) *gorm.DB {
 	fmt.Printf("Open datasource %s", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

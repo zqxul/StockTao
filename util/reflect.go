@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-// GetValue => get value from the point value
+// GetValue => get value from point type value
 func GetValue(value reflect.Value) interface{} {
 	switch value.Interface().(type) {
 	case *string:

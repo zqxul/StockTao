@@ -1,11 +1,14 @@
 package main
 
-import "stock.tao/common"
+import (
+	"stock.tao/module"
+	_ "stock.tao/module/user"
+)
 
 func init() {
 
 }
 
 func main() {
-	common.Router.Run(":8080")
+	module.Router.Run(":8080")
 }

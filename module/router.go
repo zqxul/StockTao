@@ -1,4 +1,4 @@
-package common
+package module
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,6 +8,5 @@ import (
 var Router = gin.Default()
 
 func init() {
-	Router.Use(gin.Logger())
-	Router.Use(gin.Recovery())
+
 }
