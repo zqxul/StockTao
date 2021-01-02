@@ -7,4 +7,5 @@ require (
 	github.com/sony/sonyflake v1.0.0
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/gorm v1.20.7
+	xorm.io/xorm v1.0.5 // indirect
 )

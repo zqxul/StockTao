@@ -5,7 +5,7 @@ import "strings"
 // GetTagPart => get a part of Tag
 func GetTagPart(tag, key string) (string, bool) {
 	if tag == "" {
-		return nil, false
+		return "", false
 	}
 	parts := strings.Split(tag, ";")
 	for _, part := range parts {
@@ -17,5 +17,5 @@ func GetTagPart(tag, key string) (string, bool) {
 			return elements[1], true
 		}
 	}
-	return nil, false
+	return "", false
 }
