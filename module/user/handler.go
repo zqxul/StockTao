@@ -16,13 +16,26 @@ func Register(ctx *gin.Context) {
 	request := new(RegisterRequest)
 	ctx.ShouldBindJSON(request)
 	if UsernameExist(request.Username) {
-		ctx.JSON(http.StatusBadRequest, &core.StockTao{http.StatusBadRequest, "Username already exist", nil})
+		ctx.JSON(http.StatusBadRequest, &core.StockTao{
+			Code: http.StatusBadRequest,
+			Msg:  "Username already exist",
+			Data: nil,
+		})
 	}
 	userID := CreateUser(request.Username, request.Password, request.Email, request.Nickname)
-	if userID == nil {
-		ctx.JSON(http.StatusInternalServerError, &core.StockTao{http.StatusInternalServerError, "Create user failed", nil})
+	if userID == 0 {
+		ctx.JSON(http.StatusInternalServerError, &core.StockTao{
+			Code: http.StatusInternalServerError,
+			Msg:  "Create user failed",
+			Data: nil,
+		})
+		return
 	}
-	return ctx.JSON(http.StatusOK, &core.StockTao{http.StatusOK, "Create user success", strconv.Itoa(userID)})
+	ctx.JSON(http.StatusOK, &core.StockTao{
+		Code: http.StatusOK,
+		Msg:  "Create user success",
+		Data: strconv.Itoa(int(userID)),
+	})
 }
 
 // Login ==> login handler

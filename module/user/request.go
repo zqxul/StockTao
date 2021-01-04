@@ -5,7 +5,7 @@ type RegisterRequest struct {
 	Username string `json:"username" binding:"required"` // 用户名：2-15位
 	Password string `json:"password" binding:"required"` // 密码：8-10位
 	Email    string `json:"email"`                       // 邮箱
-	NickName string `json:"nickName" binding:"required"` // 昵称
+	Nickname string `json:"nickName" binding:"required"` // 昵称
 }
 
 // LoginRequest ==> User login request

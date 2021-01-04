@@ -13,11 +13,11 @@ func init() {
 }
 
 // NextID ==> fetch next id
-func NextID() (uint64, error) {
+func NextID() uint64 {
 	id, err := snowFlake.NextID()
 	if err != nil {
 		fmt.Printf("get next id error:%v\n", err)
-		return 0, err
+		panic(err)
 	}
-	return id, err
+	return id
 }
