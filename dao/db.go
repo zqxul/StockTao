@@ -31,8 +31,8 @@ type SQLCondition interface {
 	Condition() map[string]interface{}
 }
 
-// Condition => build the SQL condition, the property of model must be the Pointer Type
-func Condition(model SQLCondition) map[string]interface{} {
+// Build => build the SQL condition, the property of model must be the Pointer Type
+func Build(model SQLCondition) map[string]interface{} {
 	c := make(map[string]interface{})
 	t, v := reflect.TypeOf(model), reflect.Indirect(reflect.ValueOf(model))
 	if t.NumField() == 0 || v.NumField() == 0 {

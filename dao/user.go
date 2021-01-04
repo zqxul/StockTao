@@ -33,7 +33,7 @@ type UserPtr struct {
 
 // Condition ==> implement SQLCondition interfae
 func (userPtr *UserPtr) Condition() map[string]interface{} {
-	return Condition(userPtr)
+	return Build(userPtr)
 }
 
 // SelectUser ==> Select User by Condition
