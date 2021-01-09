@@ -1,0 +1,29 @@
+syntax="proto3";
+
+option go_package=".;user";
+
+message PbRegisterRequest{
+    string username=1;
+    string password=2;
+    string email =3;
+    string nickname = 4;
+}
+message PbRegisterResponse{
+
+}
+
+message PbLoginRequest{
+    string username=1;
+    string password=2;
+    string verifyCode=3;
+}
+message PbLoginResponse{}
+
+
+service PbUser {
+
+    rpc Login (PbLoginRequest) returns (PbLoginResponse);
+
+    rpc Register (PbRegisterRequest) returns (PbRegisterResponse);
+
+}
