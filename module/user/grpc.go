@@ -2,64 +2,73 @@ package user
 
 import (
 	context "context"
-	"fmt"
-	"net"
+	"strconv"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/types/known/anypb"
+	"stock.tao/module/core"
 )
 
 var (
-	server = grpc.NewServer()
-
 	grpcServiceDesc = grpc.ServiceDesc{
-		ServiceName: "PbUser",
-		HandlerType: (*UserServer)(nil),
+		ServiceName: "User",
+		HandlerType: (*Server)(nil),
 		Methods: []grpc.MethodDesc{
 			{
 				MethodName: "Login",
-				Handler:    handleLogin,
+				Handler:    grpcLogin,
 			},
 			{
 				MethodName: "Register",
-				Handler:    handleRegister,
+				Handler:    grpcRegister,
 			},
 		},
 		Streams:  []grpc.StreamDesc{},
-		Metadata: "user.proto",
+		Metadata: "grpc.proto",
 	}
 )
 
-type UserServerI interface {
-	Login(context.Context, *PbLoginRequest) (*PbLoginResponse, error)
-	Register(context.Context, *PbRegisterRequest) (*PbRegisterResponse, error)
+// Server ==> server inteface
+type Server interface {
+	Login(context.Context, *PbLoginRequest) (*PbStockTao, error)
+	Register(context.Context, *PbRegisterRequest) (*PbStockTao, error)
 }
 
-type UserServer struct{}
+// ServerImpl ==> server implement
+type ServerImpl struct{}
 
 func init() {
-	server.RegisterService(&grpcServiceDesc, &UserServer{})
+	core.GrpcServer.RegisterService(&grpcServiceDesc, &ServerImpl{})
+}
 
-	listen, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		fmt.Printf("failed to listen:%v", err)
+// Login ==> implement Server inteface
+func (ServerImpl) Login(context.Context, *PbLoginRequest) (*PbStockTao, error) {
+	return &PbStockTao{}, nil
+}
+
+// Register ==> implement Server inteface
+func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (*PbStockTao, error) {
+	if UsernameExist(request.Username) {
+		return &PbStockTao{
+			Code: int32(codes.AlreadyExists),
+			Msg:  codes.AlreadyExists.String(),
+			Data: nil,
+		}, nil
 	}
-	if err := server.Serve(listen); err != nil {
-		fmt.Printf("failed to serve: %v", err)
+	userID := CreateUser(request.Username, request.Password, request.Email, request.Nickname)
+	if userID == 0 {
+		return &PbStockTao{
+			Code: int32(codes.Internal),
+			Msg:  codes.Internal.String(),
+			Data: nil,
+		}, nil
 	}
-}
-
-func (UserServer) Login(context.Context, *PbLoginRequest) (*PbLoginResponse, error) {
-	return nil, nil
-}
-func (UserServer) Register(context.Context, *PbRegisterRequest) (*PbRegisterResponse, error) {
-	return nil, nil
-}
-
-func handleRegister(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-
-	return nil, nil
-}
-
-func handleLogin(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	return nil, nil
+	return &PbStockTao{
+		Code: int32(codes.OK),
+		Msg:  codes.OK.String(),
+		Data: &anypb.Any{
+			Value: []byte(strconv.FormatUint(userID, 10)),
+		},
+	}, nil
 }

@@ -1,18 +1,20 @@
 package user
 
 import (
+	context "context"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 	"stock.tao/module/core"
 )
 
 func init() {
 }
 
-// Register ==> register handler
-func Register(ctx *gin.Context) {
+// register ==> register handler
+func register(ctx *gin.Context) {
 	request := new(RegisterRequest)
 	ctx.ShouldBindJSON(request)
 	if UsernameExist(request.Username) {
@@ -34,11 +36,49 @@ func Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, &core.StockTao{
 		Code: http.StatusOK,
 		Msg:  "Create user success",
-		Data: strconv.Itoa(int(userID)),
+		Data: strconv.FormatUint(userID, 10),
 	})
 }
 
-// Login ==> login handler
-func Login(ctx *gin.Context) {
+// grpcRegister ==> grpc register handler
+func grpcRegister(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PbRegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Server).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/User/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Server).Register(ctx, req.(*PbRegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// login ==> login handler
+func login(ctx *gin.Context) {
 	ctx.ShouldBindJSON(&LoginRequest{})
+}
+
+// grpcLogin ==> grpc login handler
+func grpcLogin(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PbLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Server).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/User/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Server).Login(ctx, req.(*PbLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }

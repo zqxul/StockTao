@@ -6,6 +6,6 @@ var group = core.Router.Group("/user")
 
 // init request path to handler
 func init() {
-	group.POST("/register", Register)
-	group.POST("/login", Login)
+	group.POST("/register", register)
+	group.POST("/login", login)
 }

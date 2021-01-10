@@ -6,10 +6,13 @@ import (
 	_ "stock.tao/module/user"
 )
 
+var port, grpcPort int = 8080, 8081
+
 func init() {
 
 }
 
 func main() {
-	core.Router.Run(":8080")
+	core.RunServer(port)
+	core.RunGrpcServer(grpcPort)
 }
