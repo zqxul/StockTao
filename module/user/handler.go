@@ -2,6 +2,7 @@ package user
 
 import (
 	context "context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -66,6 +67,7 @@ func login(ctx *gin.Context) {
 
 // grpcLogin ==> grpc login handler
 func grpcLogin(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	fmt.Printf("-------------")
 	in := new(PbLoginRequest)
 	if err := dec(in); err != nil {
 		return nil, err

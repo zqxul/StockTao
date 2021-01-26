@@ -6,13 +6,14 @@ import (
 	"strconv"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // GrpcServer ==> grpc server
 var GrpcServer = grpc.NewServer()
 
 func init() {
-
+	reflection.Register(GrpcServer)
 }
 
 // RunGrpcServer ==> run grpc server
