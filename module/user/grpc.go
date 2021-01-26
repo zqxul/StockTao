@@ -12,7 +12,7 @@ import (
 
 var (
 	grpcServiceDesc = grpc.ServiceDesc{
-		ServiceName: "User",
+		ServiceName: "PbUser",
 		HandlerType: (*Server)(nil),
 		Methods: []grpc.MethodDesc{
 			{
@@ -44,7 +44,10 @@ func init() {
 
 // Login ==> implement Server inteface
 func (ServerImpl) Login(context.Context, *PbLoginRequest) (*PbStockTao, error) {
-	return &PbStockTao{}, nil
+	return &PbStockTao{
+		Code: 100,
+		Msg:  codes.AlreadyExists.String(),
+	}, nil
 }
 
 // Register ==> implement Server inteface
