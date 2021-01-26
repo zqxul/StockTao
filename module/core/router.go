@@ -10,7 +10,7 @@ import (
 var Router = gin.Default()
 
 func init() {
-
+	gin.Recovery()
 }
 
 // RunServer ==> run server

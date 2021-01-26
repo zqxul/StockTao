@@ -1,6 +1,13 @@
 package dao
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"time"
+
+	"stock.tao/util"
+)
 
 // User ==> user model map to table user
 type User struct {
@@ -19,8 +26,8 @@ func (u *User) TableName() string {
 	return "st_user"
 }
 
-// UserPtr ==> user condition
-type UserPtr struct {
+// UserCondition ==> user condition
+type UserCondition struct {
 	ID         *uint64    `column:"id"`
 	Username   *string    `column:"username"`
 	Password   *string    `column:"password"`
@@ -31,25 +38,61 @@ type UserPtr struct {
 	Delete     *bool      `column:"delete"`
 }
 
-// Condition ==> implement SQLCondition interfae
-func (userPtr *UserPtr) Condition() map[string]interface{} {
-	return Build(userPtr)
+// Build ==> implement SQLCondition interfae
+func (userCondition UserCondition) Build() map[string]interface{} {
+	c := make(map[string]interface{})
+	t, v := reflect.TypeOf(userCondition), reflect.Indirect(reflect.ValueOf(userCondition))
+	if t.NumField() == 0 || v.NumField() == 0 {
+		return c
+	}
+	for i := 0; i < t.NumField(); i++ {
+		if v.Field(i).IsNil() {
+			continue
+		}
+		f := t.Field(i)
+		if column, ok := f.Tag.Lookup("column"); ok {
+			c[column] = util.GetValue(v.Field(i))
+		}
+	}
+
+	bs, _ := json.Marshal(c)
+	fmt.Printf(string(bs))
+	return c
 }
 
-// SelectUser ==> Select User by Condition
-func SelectUser(userPtr *UserPtr) *User {
+// Exist ==> Select one User by Condition
+func Exist(userCondition *UserCondition) bool {
+	exist, err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Exist()
+	if err != nil {
+		panic(err)
+	}
+	return exist
+}
+
+// SelectOne ==> Select one User by Condition
+func SelectOne(userCondition *UserCondition) *User {
 	user := new(User)
-	if _, err := engine.AllCols().Where(userPtr.Condition()).Get(user); err != nil {
+	if _, err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Exist(); err != nil {
 		panic(err)
 	}
 	return user
 }
 
+// SelectList ==> Select users by condition
+func SelectList(userCondition *UserCondition) []*User {
+	users := make([]*User, 10)
+	if err := engine.AllCols().Where(userCondition.Build(), make([]interface{}, 0)).Find(users); err != nil {
+		panic(err)
+	}
+	return users
+
+}
+
 // ExistUser ==> Exist User by Condition
-func ExistUser(userPtr *UserPtr) (exist bool) {
+func ExistUser(userCondition *UserCondition) (exist bool) {
 	var err error
-	user := new(User)
-	if exist, err = engine.AllCols().Where(userPtr.Condition()).Exist(user); err != nil {
+	// user := new(User)
+	if exist, err = engine.AllCols().Where(userCondition.Build()).Exist(); err != nil {
 		panic(err)
 	}
 	return exist

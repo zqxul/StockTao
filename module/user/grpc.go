@@ -29,6 +29,48 @@ var (
 	}
 )
 
+func init() {
+	core.GrpcServer.RegisterService(&grpcServiceDesc, &ServerImpl{})
+}
+
+// grpcLogin ==> grpc login handler
+func grpcLogin(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PbLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Server).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/User/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Server).Login(ctx, req.(*PbLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// grpcRegister ==> grpc register handler
+func grpcRegister(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PbRegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Server).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/User/Register",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Server).Register(ctx, req.(*PbRegisterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Server ==> server inteface
 type Server interface {
 	Login(context.Context, *PbLoginRequest) (*PbStockTao, error)
@@ -37,10 +79,6 @@ type Server interface {
 
 // ServerImpl ==> server implement
 type ServerImpl struct{}
-
-func init() {
-	core.GrpcServer.RegisterService(&grpcServiceDesc, &ServerImpl{})
-}
 
 // Login ==> implement Server inteface
 func (ServerImpl) Login(context.Context, *PbLoginRequest) (*PbStockTao, error) {
@@ -51,7 +89,7 @@ func (ServerImpl) Login(context.Context, *PbLoginRequest) (*PbStockTao, error) {
 }
 
 // Register ==> implement Server inteface
-func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (*PbStockTao, error) {
+func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *PbStockTao, e error) {
 	if UsernameExist(request.Username) {
 		return &PbStockTao{
 			Code: int32(codes.AlreadyExists),

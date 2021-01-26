@@ -12,13 +12,9 @@ func init() {
 }
 
 // UsernameExist ==> check if the username already exists
-func UsernameExist(username string) (exist bool) {
-	userCondition := dao.UserPtr{Username: &username}
-	user := dao.SelectUser(&userCondition)
-	if user != nil {
-		exist = true
-	}
-	return
+func UsernameExist(username string) bool {
+	userCondition := dao.UserCondition{Username: &username}
+	return dao.Exist(&userCondition)
 }
 
 // CreateUser ==> create new user
@@ -34,4 +30,12 @@ func CreateUser(username, password, email, nickname string) uint64 {
 		Delete:     false,
 	}
 	return dao.InsertUser(user)
+}
+
+// VerifyUser ==> verify user
+func VerifyUser(username, password string) bool{
+	userCondition := dao.UserCondition{
+		Username: username,
+		Password: ,
+	}
 }
