@@ -14,19 +14,20 @@ func Salt(len uint) string {
 	if _, err := rand.Read(b); err != nil {
 		panic(err)
 	}
-	return base32.HexEncoding.EncodeToString(b)
-	// return Byte2Str(b...)
+	return base32.HexEncoding.EncodeToString(b)[0:32]
 }
 
 // Encrypt ==> encrypt
 func Encrypt(key []byte, src []byte) string {
+	srcBuf := make([]byte, aes.BlockSize)
+	copy(srcBuf, src)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		panic(err)
 	}
 	dst := make([]byte, 32)
-	block.Encrypt(dst, src)
-	return string(dst)
+	block.Encrypt(dst, srcBuf)
+	return base32.HexEncoding.EncodeToString(dst)[0:32]
 }
 
 // Encrypt16 ==> encrypt 16

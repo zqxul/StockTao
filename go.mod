@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/fullstorydev/grpcurl v1.8.0 // indirect
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-delve/delve v1.5.1 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.3
 	github.com/sony/sonyflake v1.0.0

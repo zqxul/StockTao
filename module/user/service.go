@@ -19,11 +19,13 @@ func UsernameExist(username string) bool {
 
 // CreateUser ==> create new user
 func CreateUser(username, password, email, nickname string) uint64 {
+	salt := util.Salt(32)
+	encPwd := util.Encrypt([]byte(salt), []byte(password))
 	user := &dao.User{
 		ID:         util.NextID(),
 		Username:   username,
-		Password:   password,
-		Salt:       util.Salt(32),
+		Password:   encPwd,
+		Salt:       salt,
 		Email:      email,
 		Nickname:   nickname,
 		CreateTime: time.Now(),
