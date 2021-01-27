@@ -14,6 +14,7 @@ type User struct {
 	ID         uint64    `xorm:"id"`
 	Username   string    `xorm:"username"`
 	Password   string    `xorm:"password"`
+	Salt       string    `xorm:"salt"`
 	Email      string    `xorm:"email"`
 	Nickname   string    `xorm:"nickname"`
 	CreateTime time.Time `xorm:"create_time"`
@@ -31,6 +32,7 @@ type UserCondition struct {
 	ID         *uint64    `column:"id"`
 	Username   *string    `column:"username"`
 	Password   *string    `column:"password"`
+	Salt       *string    `column:"salt"`
 	Email      *string    `column:"email"`
 	Nickname   *string    `column:"nickname"`
 	CreateTime *time.Time `column:"create_time"`
@@ -71,16 +73,19 @@ func Exist(userCondition *UserCondition) bool {
 
 // SelectOne ==> Select one User by Condition
 func SelectOne(userCondition *UserCondition) *User {
-	user := new(User)
-	if _, err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Exist(); err != nil {
+	users := make([]*User, 0)
+	if err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Find(users); err != nil {
 		panic(err)
 	}
-	return user
+	if len(users) == 0 {
+		return nil
+	}
+	return users[0]
 }
 
 // SelectList ==> Select users by condition
 func SelectList(userCondition *UserCondition) []*User {
-	users := make([]*User, 10)
+	users := make([]*User, 0)
 	if err := engine.AllCols().Where(userCondition.Build(), make([]interface{}, 0)).Find(users); err != nil {
 		panic(err)
 	}

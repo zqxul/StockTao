@@ -36,7 +36,6 @@ func register(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, &core.StockTao{
 			Code: http.StatusInternalServerError,
 			Msg:  "Create user failed",
-			Data: nil,
 		})
 		return
 	}
@@ -50,5 +49,24 @@ func register(ctx *gin.Context) {
 // login ==> login handler
 func login(ctx *gin.Context) {
 	request := new(LoginRequest)
-	ctx.ShouldBindJSON(request)
+	err := ctx.BindJSON(request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, &core.StockTao{
+			Code: http.StatusBadRequest,
+			Msg:  err.Error(),
+			Data: nil,
+		})
+		return
+	}
+	if !VerifyUser(request.Username, request.Password) {
+		ctx.JSON(http.StatusOK, &core.StockTao{
+			Code: http.StatusBadRequest,
+			Msg:  "Username Or Password invalid",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, &core.StockTao{
+		Code: http.StatusOK,
+		Msg:  "Login Success",
+	})
 }

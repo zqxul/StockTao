@@ -23,6 +23,7 @@ func CreateUser(username, password, email, nickname string) uint64 {
 		ID:         util.NextID(),
 		Username:   username,
 		Password:   password,
+		Salt:       util.Salt(32),
 		Email:      email,
 		Nickname:   nickname,
 		CreateTime: time.Now(),
@@ -33,9 +34,13 @@ func CreateUser(username, password, email, nickname string) uint64 {
 }
 
 // VerifyUser ==> verify user
-func VerifyUser(username, password string) bool{
+func VerifyUser(username, password string) bool {
 	userCondition := dao.UserCondition{
-		Username: username,
-		Password: ,
+		Username: &username,
 	}
+	user := dao.SelectOne(&userCondition)
+	if user == nil {
+		return false
+	}
+	return user.Password == util.Encrypt([]byte(user.Salt), []byte(password))
 }
