@@ -15,5 +15,5 @@ func init() {
 
 func main() {
 	// core.RunHTTPServer(port)
-	core.RunGrpcServer(grpcPort)
+	core.RunGRPCServer(grpcPort)
 }

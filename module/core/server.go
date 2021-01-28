@@ -16,8 +16,8 @@ func init() {
 	reflection.Register(GrpcServer)
 }
 
-// RunGrpcServer ==> run grpc server
-func RunGrpcServer(port int) {
+// RunGRPCServer ==> run grpc server
+func RunGRPCServer(port int) {
 	listen, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		fmt.Printf("failed to listen:%v", err)
