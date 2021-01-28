@@ -2,6 +2,7 @@ package user
 
 import (
 	context "context"
+	"errors"
 	"strconv"
 
 	"google.golang.org/grpc"
@@ -81,10 +82,32 @@ type Server interface {
 type ServerImpl struct{}
 
 // Login ==> implement Server inteface
-func (ServerImpl) Login(context.Context, *PbLoginRequest) (*PbStockTao, error) {
+func (ServerImpl) Login(ctx context.Context, request *PbLoginRequest) (*PbStockTao, error) {
+	err := func(request *PbLoginRequest) error {
+		if len(request.Username) == 0 {
+			return errors.New("Username can not be blank")
+		} else if len(request.Password) == 0 {
+			return errors.New("Password can not be blank")
+		} else if len(request.VerifyCode) == 0 {
+			return errors.New("VerifyCode can not be blank")
+		}
+		return nil
+	}(request)
+	if err != nil {
+		return &PbStockTao{
+			Code: int32(codes.DataLoss),
+			Msg:  codes.DataLoss.String(),
+		}, nil
+	}
+	if !VerifyUser(request.Username, request.Password) {
+		return &PbStockTao{
+			Code: int32(codes.PermissionDenied),
+			Msg:  codes.PermissionDenied.String(),
+		}, nil
+	}
 	return &PbStockTao{
-		Code: 100,
-		Msg:  codes.AlreadyExists.String(),
+		Code: int32(codes.OK),
+		Msg:  codes.OK.String(),
 	}, nil
 }
 
@@ -94,7 +117,6 @@ func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *
 		return &PbStockTao{
 			Code: int32(codes.AlreadyExists),
 			Msg:  codes.AlreadyExists.String(),
-			Data: nil,
 		}, nil
 	}
 	userID := CreateUser(request.Username, request.Password, request.Email, request.Nickname)
@@ -102,7 +124,6 @@ func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *
 		return &PbStockTao{
 			Code: int32(codes.Internal),
 			Msg:  codes.Internal.String(),
-			Data: nil,
 		}, nil
 	}
 	return &PbStockTao{

@@ -13,7 +13,7 @@ func init() {
 	gin.Recovery()
 }
 
-// RunServer ==> run server
-func RunServer(port int) {
+// RunHTTPServer ==> run server
+func RunHTTPServer(port int) {
 	Router.Run(":" + strconv.Itoa(port))
 }
