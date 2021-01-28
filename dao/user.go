@@ -73,14 +73,14 @@ func Exist(userCondition *UserCondition) bool {
 
 // SelectOne ==> Select one User by Condition
 func SelectOne(userCondition *UserCondition) *User {
-	users := make([]*User, 0)
-	if err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Find(users); err != nil {
+	users := make([]User, 0)
+	if err := engine.Table("st_user").AllCols().Where(userCondition.Build()).Find(&users); err != nil {
 		panic(err)
 	}
 	if len(users) == 0 {
 		return nil
 	}
-	return users[0]
+	return &users[0]
 }
 
 // SelectList ==> Select users by condition
