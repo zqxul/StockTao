@@ -5,9 +5,9 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/protobuf/types/known/anypb"
 	"stock.tao/module/core"
 )
 
@@ -126,11 +126,12 @@ func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *
 			Msg:  codes.Internal.String(),
 		}, nil
 	}
+	data, _ := ptypes.MarshalAny(&PbRegisterResponse{
+		UserID: strconv.FormatInt(int64(userID), 10),
+	})
 	return &PbStockTao{
 		Code: int32(codes.OK),
 		Msg:  codes.OK.String(),
-		Data: &anypb.Any{
-			Value: []byte(strconv.FormatUint(userID, 10)),
-		},
+		Data: data,
 	}, nil
 }
