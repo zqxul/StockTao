@@ -13,7 +13,7 @@ import (
 
 var (
 	grpcServiceDesc = grpc.ServiceDesc{
-		ServiceName: "PbUser",
+		ServiceName: "User",
 		HandlerType: (*Server)(nil),
 		Methods: []grpc.MethodDesc{
 			{
