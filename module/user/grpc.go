@@ -95,34 +95,42 @@ func (ServerImpl) Login(ctx context.Context, request *PbLoginRequest) (*PbStockT
 	}(request)
 	if err != nil {
 		return &PbStockTao{
-			Code: int32(codes.DataLoss),
+			Code: uint32(codes.DataLoss),
 			Msg:  codes.DataLoss.String(),
 		}, nil
 	}
-	if !VerifyUser(request.Username, request.Password) {
+	ok, user := VerifyUser(request.Username, request.Password)
+	if !ok {
 		return &PbStockTao{
-			Code: int32(codes.PermissionDenied),
+			Code: uint32(codes.PermissionDenied),
 			Msg:  codes.PermissionDenied.String(),
 		}, nil
 	}
+	data, _ := ptypes.MarshalAny(&PbLoginResponse{
+		UserID:   strconv.FormatInt(int64(user.ID), 10),
+		Username: user.Username,
+		Email:    user.Email,
+		Nickname: user.Nickname,
+	})
 	return &PbStockTao{
-		Code: int32(codes.OK),
+		Code: uint32(core.Success),
 		Msg:  codes.OK.String(),
+		Data: data,
 	}, nil
 }
 
 // Register ==> implement Server inteface
-func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *PbStockTao, e error) {
+func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (*PbStockTao, error) {
 	if UsernameExist(request.Username) {
 		return &PbStockTao{
-			Code: int32(codes.AlreadyExists),
+			Code: uint32(codes.AlreadyExists),
 			Msg:  codes.AlreadyExists.String(),
 		}, nil
 	}
 	userID := CreateUser(request.Username, request.Password, request.Email, request.Nickname)
 	if userID == 0 {
 		return &PbStockTao{
-			Code: int32(codes.Internal),
+			Code: uint32(codes.Internal),
 			Msg:  codes.Internal.String(),
 		}, nil
 	}
@@ -130,7 +138,7 @@ func (ServerImpl) Register(ctx context.Context, request *PbRegisterRequest) (r *
 		UserID: strconv.FormatInt(int64(userID), 10),
 	})
 	return &PbStockTao{
-		Code: int32(codes.OK),
+		Code: uint32(core.Success),
 		Msg:  codes.OK.String(),
 		Data: data,
 	}, nil

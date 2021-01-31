@@ -58,7 +58,8 @@ func login(ctx *gin.Context) {
 		})
 		return
 	}
-	if !VerifyUser(request.Username, request.Password) {
+	ok, _ := VerifyUser(request.Username, request.Password)
+	if !ok {
 		ctx.JSON(http.StatusOK, &core.StockTao{
 			Code: http.StatusBadRequest,
 			Msg:  "Username Or Password invalid",

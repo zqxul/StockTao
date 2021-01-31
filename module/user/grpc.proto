@@ -5,7 +5,7 @@ import "google/protobuf/any.proto";
 option go_package=".;user";
 
 message PbStockTao { 
-    int32 code = 1;
+    uint32 code = 1;
     string msg = 2;
     google.protobuf.Any data = 3;
 }
@@ -26,6 +26,13 @@ message PbLoginRequest{
     string password=2;
     string verifyCode=3;
     bool rememberMe=4;
+}
+
+message PbLoginResponse{
+    string userID=1;
+    string username=2;
+    string email = 3;
+    string nickname=4;
 }
 
 

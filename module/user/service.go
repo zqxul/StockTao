@@ -36,13 +36,13 @@ func CreateUser(username, password, email, nickname string) uint64 {
 }
 
 // VerifyUser ==> verify user
-func VerifyUser(username, password string) bool {
+func VerifyUser(username, password string) (bool, *dao.User) {
 	userCondition := dao.UserCondition{
 		Username: &username,
 	}
 	user := dao.SelectOne(&userCondition)
 	if user == nil {
-		return false
+		return false, nil
 	}
-	return user.Password == util.Encrypt([]byte(user.Salt), []byte(password))
+	return user.Password == util.Encrypt([]byte(user.Salt), []byte(password)), user
 }
