@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	_ "net/http/pprof"
+
+	_ "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // init request path to handler
