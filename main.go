@@ -4,6 +4,7 @@ import (
 	// _ "github.com/fullstorydev/grpcui/cmd/grpcui"
 	_ "github.com/go-sql-driver/mysql"
 	"stock.tao/module/core"
+	_ "stock.tao/module/monitor"
 	_ "stock.tao/module/user"
 )
 
@@ -14,6 +15,6 @@ func init() {
 }
 
 func main() {
-	// core.RunHTTPServer(port)
+	core.RunHTTPServer(port)
 	core.RunGRPCServer(grpcPort)
 }
