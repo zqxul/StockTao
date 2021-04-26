@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/fullstorydev/grpcui/cmd/grpcui"
-	_ "github.com/fullstorydev/grpcurl"
+	// _ "github.com/fullstorydev/grpcui/cmd/grpcui"
+	// _ "github.com/fullstorydev/grpcurl"
 	_ "github.com/go-sql-driver/mysql"
 	"stock.tao/module/core"
 	_ "stock.tao/module/monitor"

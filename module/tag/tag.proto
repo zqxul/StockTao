@@ -1,0 +1,45 @@
+syntax="proto3";
+
+import "google/protobuf/any.proto";
+
+option go_package=".;tag";
+
+message PbStockTao {
+    uint32 code = 1;
+    string msg = 2;
+    google.protobuf.Any data = 3;
+}
+
+message PbTagInfo{
+    int64 tagID =1;
+    string tagName = 2;
+}
+
+message PbTagMemberRequest{
+    int64 tagID=1;
+}
+
+message PbTagMemberResponse{
+    int64 groupID=1;
+    repeated PbUserInfo userInfos=2;
+}
+
+message PbTagListRequest{}
+
+message PbUserInfo{
+    int64 userID = 1;
+    string username = 2;
+    string nickname = 3;
+    string avatar = 4;
+    bool online = 5;
+    repeated string tags = 6;
+}
+
+
+service PbTag {
+
+    rpc List(PbTagListRequest) returns (PbStockTao);
+
+    rpc ListMembers (PbTagMemberRequest) returns (PbStockTao);
+
+}
